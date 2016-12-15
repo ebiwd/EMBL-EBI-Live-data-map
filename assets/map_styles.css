@@ -1,0 +1,46 @@
+body { margin:0; padding:0; }
+#map { position:absolute; top:0; bottom:0; width:100%; }
+.daynightoverlay { opacity: .1 }
+.leaflet-div-icon { background: none; border: none; }
+.leaflet-marker-icon  { text-align: center; }
+
+.leaflet-marker-icon div { height: 100%; }
+
+.leaflet-marker-icon div.big-cluster { font-size: 35px; }
+.leaflet-marker-icon div.big-cluster:hover { color: #fff; }
+
+.leaflet-marker-icon div { color: rgba(0,0,0,.4); mix-blend-mode: multiply; }
+
+.leaflet-marker-icon div.markerClustersEBI { background: rgba(168,200,19,.4); }
+.leaflet-marker-icon div.markerClustersEBI:hover { background: rgba(168,200,19,1); color: #fff; }
+
+.leaflet-marker-icon div.markerClustersPortals { background: rgba(235,98,9,.4); }
+.leaflet-marker-icon div.markerClustersPortals:hover { background: rgba(235,98,9,1); color: #fff; }
+
+.leaflet-marker-icon div.markerClustersUniprot { background: rgba(29,92,116,.4); }
+.leaflet-marker-icon div.markerClustersUniprot:hover { background: rgba(29,92,116,1); color: #fff; }
+
+.legend {
+  background-color: #fff;
+  border-radius: 3px;
+  bottom: 30px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  padding: 10px;
+  position: absolute;
+  right: 10px;
+  z-index: 1;
+}
+
+.legend h4 { margin: 0 0 5px; }
+
+.legend div span {
+  border-radius: 50%;
+  display: inline-block;
+  height: 10px;
+  margin-right: 5px;
+  width: 10px;
+}
+
+.legend a { text-decoration: none; color: #666; }
+.legend a .icon { padding-right: 1px; }
