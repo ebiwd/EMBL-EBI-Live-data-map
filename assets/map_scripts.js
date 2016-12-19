@@ -80,7 +80,7 @@ function newMarkerClusterGroup(clusterColors,targetClusterCSSClass,clusterPopUpH
   return clusterName;
 }
 
-function processData(fetchedData, targetClusterGroup, targetClusterGroupColor) {
+function processData(fetchedData) {
   var markerClustersTemporary = [];
   
   fetchedData.eachLayer( function(marker) {
@@ -92,22 +92,30 @@ function processData(fetchedData, targetClusterGroup, targetClusterGroupColor) {
         stroke: true,
         color: 'rgb(202,210,211)',
         weight: '1',
-        fillColor: targetClusterGroupColor,
+        // fillColor: targetClusterGroupColor,
         fillOpacity: '.4'
       });
       markerNode.setRadius(5);
       // markerNode.bindPopup(title);
-      markerClustersTemporary.push(markerNode);
+      // group the layers by data source
+      var targetLayer = marker.feature.properties['target-layer'];
+      if (markerClustersTemporary[targetLayer] == undefined) { markerClustersTemporary[targetLayer] = []; }
+      markerClustersTemporary[targetLayer].push(markerNode);
     }
   });
 
   // process new nodes
-  removeAndAddNodes(targetClusterGroup,markerClustersTemporary);
+  for(var index in markerClustersTemporary) { 
+    removeAndAddNodes(index,markerClustersTemporary[index]);  
+  }
+
 }
 
 // Progressivley load and unload nodes based on the number of nodes to move, and how quickly we pull data.
 // We do this so the maps is less chunky adding and removing data.
 function removeAndAddNodes(targetClusterGroup,queueToAdd) {
+
+  targetClusterGroup = window[targetClusterGroup]; // reattach passed string to mapbox layer
 
   function addNodes() {
     if (mainLoopPause === true) return;
@@ -131,12 +139,12 @@ function removeAndAddNodes(targetClusterGroup,queueToAdd) {
       // schedule marker removal
       setTimeout(function() { 
         scheduledNodeRemoval(targetClusterGroup,nodeToProcess);
-      }, lifeSpan*feedsToPull.length); 
+      }, lifeSpan * 2); 
     }
   }
 
   // run the queue
-  var addNodesVar = window.setInterval(addNodes, lifeSpan * feedsToPull.length / queueToAdd.length+1);
+  var addNodesVar = window.setInterval(addNodes, lifeSpan / queueToAdd.length+1);
 }
 
 function scheduledNodeRemoval(targetClusterGroup,targetNode) {
@@ -146,7 +154,7 @@ function scheduledNodeRemoval(targetClusterGroup,targetNode) {
     // wait XXms and check again
     setTimeout(function() { 
       scheduledNodeRemoval(targetClusterGroup,targetNode);
-    }, lifeSpan * feedsToPull.length); 
+    }, lifeSpan); 
   }
 }
 
@@ -155,35 +163,44 @@ function runClusters() {
 
   if (mainLoopPause === true) return;
 
-  counter++;
-  if (counter >= feedsToPull.length + 1) counter = 1;
+  // we just ask the server and it will return all desired data sets
+  $('.data-freshness').fadeTo( "fast", 0.5 );
 
-  // we rotate between each log file to update
-  // Keep in mind the frequency of this function is set by the var lifeSpan
-  switch (counter) {
-    case 1:
-      // omnivore.kml('/ebiwebtrafficmap/fcgi-bin/ebi.fcgi', null)
-      omnivore.csv('parseLogMap.php?file='+feedsToPull[counter], null)
-        .on('ready', function(layer) {
-          processData(this,markerClustersEBI,markerClustersEBIColor);      
-        });
-      break;
-    case 2:
-      // omnivore.kml('/ebiwebtrafficmap/fcgi-bin/portals.fcgi', null)
-      omnivore.csv('parseLogMap.php?file='+feedsToPull[counter], null)
-        .on('ready', function(layer) {
-          processData(this,markerClustersPortals,markerClustersPortalsColor);      
-        });
-      break;
-    case 3:
-      // omnivore.kml('/ebiwebtrafficmap/fcgi-bin/uniprot.fcgi', null)
-      omnivore.csv('parseLogMap.php?file='+feedsToPull[counter], null)
-        .on('ready', function(layer) {
-          processData(this,markerClustersUniprot,markerClustersUniprotColor);      
-        });
-      break;
-    default:
-      break;
+  $.ajax({
+    type: "GET",
+    url: 'parseLogMap.php?file=all&cachebust='+Math.floor((Math.random() * 1000) + 1),
+    dataType: "text",
+    success: function(data, textStatus, request) { 
+      // compare the cache file time to request server time and if it's out of step, take steps to align with "Fresh" server time
+      var offset = 0;
+      if (request.getResponseHeader('Map-cache-creation') > 0) {
+        offset = request.getResponseHeader('Map-cache-server-time') - request.getResponseHeader('Map-cache-creation');
+      }
+      if (offset === 0) {
+        // tell user map is fresh, but wait for old dots to sync up first 
+        setTimeout(function() { 
+          $('.leaflet-control-attribution .data-freshness').html('Map is fresh ');       
+        }, lifeSpan - 500 );
+      } else {
+        // inch closer to actual time
+        window.clearInterval(mainLoop);
+        mainLoopPause = true;
+        setTimeout(function() { 
+          mainLoop = window.setInterval(runClusters, lifeSpan); // schedule future updates  
+          mainLoopPause = false;
+        }, 500 );
+
+        $('.leaflet-control-attribution .data-freshness').html('Data is ' + offset + ' seconds stale ... compensating. ');       
+
+      }
+      parseDate(data,offset);
+    }
+  });
+
+  function parseDate(data) {
+    var readyData = omnivore.csv.parse(data, null);
+    processData(readyData);
+    $('.data-freshness').fadeTo( "fast", 1 );
   }
 
 }
@@ -202,13 +219,16 @@ map.addLayer(markerClustersEBI);
 map.addLayer(markerClustersPortals);
 map.addLayer(markerClustersUniprot);
 
-var lifeSpan = 7000; // how quickly we fetch data, and how long each dot lasts
-var feedsToPull = ['ebi','portals','uniprot']; // the endpoint from parseLogMap.php?file= that we want
+var lifeSpan = 6000; // how quickly we fetch data, and how long each dot lasts
+ // NOTE: this needs to match up with the server side cach frequency and needs to be faster
 var mainLoopPause = false; // functionality for a "pause button"
 var mainLoop = window.setInterval(runClusters, lifeSpan); // schedule futur updates  
 
-// run the data pull immediately on strap for each feed
-for (var i = 0; i < feedsToPull.length; i++) { runClusters(); }
+// add a holder for data freshness
+$('.leaflet-control-attribution').prepend('<span class="data-freshness"></span> ');
+
+// run the data pull immediately on strap 
+runClusters(); 
 
 $('a.pause').on('click',function(){
   if (mainLoopPause === false) {

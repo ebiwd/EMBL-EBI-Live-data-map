@@ -1,9 +1,9 @@
-<!-- 
-  ___ ___ ___   ___ ___ _____   _____ ___ ___   __  __   _   ___ 
+<!--
+  ___ ___ ___   ___ ___ _____   _____ ___ ___   __  __   _   ___
  | __| _ )_ _| / __| __| _ \ \ / /_ _/ __| __| |  \/  | /_\ | _ \
  | _|| _ \| |  \__ \ _||   /\ V / | | (__| _|  | |\/| |/ _ \|  _/
- |___|___/___| |___/___|_|_\ \_/ |___\___|___| |_|  |_/_/ \_\_|  
-                                                                 
+ |___|___/___| |___/___|_|_\ \_/ |___\___|___| |_|  |_/_/ \_\_|
+
                  ,_   .  ._. _.  .
            , _-\','|~\~      ~/      ;-'_   _-'     ,;_;_,    ~~-
   /~~-\_/-'~'- ' \~~| ',    ,'      /  / ~|-_\_/~/~      ~~ -~~~~' -_
@@ -50,7 +50,7 @@
 
   The map and its asset URLs are subject to change, so please do not directly code the map into your web page.
 
-  Updates: 
+  Updates:
     2016-12-14: Initial go-live
   Credits:
     - Philip Lewis: Backend server log queries, first implementation
@@ -71,11 +71,12 @@
 
 <body>
   <div id="map"></div>
-  <div id="state-legend" class="legend">
+
+  <div id="state-legend" class="legend modal">
     <h4>Request type</h4>
-    <div><span style='background-color: rgba(168,200,19,.4)'></span>EMBL-EBI</div>
-    <div><span style='background-color: rgba(235,98,9,.4)'></span>Portals</div>
-    <div><span style='background-color: rgba(29,92,116,.4)'></span>Uniprot</div>
+    <div class="markerClustersEBI"><span class="legend-icon" style='background-color: rgba(168,200,19,.4)'></span>EMBL-EBI</div>
+    <div class="markerClustersPortals"><span class="legend-icon" style='background-color: rgba(235,98,9,.4)'></span>Portals</div>
+    <div class="markerClustersUniprot"><span class="legend-icon" style='background-color: rgba(29,92,116,.4)'></span>Uniprot</div>
     <div><a href="#" class="pause"><span class="icon icon-functional" data-icon="o"></span>Pause</a></div>
   </div>
 
@@ -92,11 +93,11 @@
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    ga('set', 'anonymizeIp', true);    
+    ga('set', 'anonymizeIp', true);
     ga('create', 'UA-629242-1', 'auto');
     ga('send', 'pageview');
 
   </script>
 
-</body> 
+</body>
 </html>
