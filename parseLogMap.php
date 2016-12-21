@@ -9,7 +9,7 @@
 
   // Don't allow direct use of the file, and don't allow non-ebi hosted use of file
   if (strpos(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST),'ebi.ac.uk') < 1) {
-    // exit;
+    exit;
   }
 
   // Which file(s) is the requester after?
@@ -29,25 +29,32 @@
   }
 
   // OK then, we're getting new data...
+
+  // the available sources
+  $dataSources = array(
+    "ebi" => "http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/ebi.fcgi",
+    "portals" => "http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/portals.fcgi",
+    "uniprot" => "http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/uniprot.fcgi",
+  );
+
+  // what's been requested
   switch ($desiredFile) {
     case 'all':
     default: 
       $desiredFile = 'all'; // cleanup wild url requests
-      $desiredFiles = array('http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/ebi.fcgi',
-                            'http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/portals.fcgi',
-                            'http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/uniprot.fcgi');
+      $desiredFiles = array($dataSources["ebi"],$dataSources["portals"],$dataSources["uniprot"]);
       $pointType = array('markerClustersEBI','markerClustersPortals','markerClustersUniprot');
       break;
     case 'ebi':
-      $desiredFiles = array('http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/ebi.fcgi');
+      $desiredFiles = array($dataSources[$desiredFile]);
       $pointType = array('markerClustersEBI');
       break;
     case 'portals':
-      $desiredFiles = array('http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/portals.fcgi');
+      $desiredFiles = array($dataSources[$desiredFile]);
       $pointType = array('markerClustersPortals');
       break;
     case 'uniprot':
-      $desiredFiles = array('http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/uniprot.fcgi');
+      $desiredFiles = array($dataSources[$desiredFile]);
       $pointType = array('markerClustersUniprot');
       break;
   }
