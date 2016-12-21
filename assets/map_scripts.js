@@ -27,7 +27,7 @@ L.tileLayer(
       // minZoom: 3,
       tileSize: 512,
       zoomOffset: -1,
-      attribution: '© <a href="http://wwwdev.ebi.ac.uk/web_guidelines/map-test/clustered.html">EMBL-EBI</a> © <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      attribution: '© <a href="//www.ebi.ac.uk/about">EMBL-EBI</a> © <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
 map.options.maxZoom = 6;
