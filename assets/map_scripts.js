@@ -10,7 +10,7 @@ var map = L.mapbox.map('map');
 // show sunrise and sunset
 // http://joergdietrich.github.io/Leaflet.Terminator/
 var daynightoverlay = L.terminator({className:'daynightoverlay'});
-map.setView([30, daynightoverlay.getLatLngs()[0][700]['lng']], 3);
+map.setView([30, daynightoverlay.getLatLngs()[0][700]['lng']], 2);
 // map.setView([30, 10], 3);
 daynightoverlay.addTo(map);
 
