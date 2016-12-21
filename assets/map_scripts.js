@@ -231,6 +231,7 @@ $('.leaflet-control-attribution').prepend('<span class="data-freshness"></span> 
 // run the data pull immediately on strap 
 runClusters(); 
 
+// Pause toggling
 $('a.pause').on('click',function(){
   if (mainLoopPause === false) {
     mainLoopPause = true;
@@ -240,3 +241,39 @@ $('a.pause').on('click',function(){
     $('a.pause').html('<span class="icon icon-functional" data-icon="o"></span>Pause');
   }
 });
+
+// Bonus: on IE10+ (and other modern browsers), pause the map when the tab doesn't show
+// https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+
+// Set the name of the hidden property and the change event for visibility
+var hidden, visibilityChange; 
+if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
+  hidden = "hidden";
+  visibilityChange = "visibilitychange";
+} else if (typeof document.msHidden !== "undefined") {
+  hidden = "msHidden";
+  visibilityChange = "msvisibilitychange";
+} else if (typeof document.webkitHidden !== "undefined") {
+  hidden = "webkitHidden";
+  visibilityChange = "webkitvisibilitychange";
+}
+ 
+function handleVisibilityChange() {
+  if (document[hidden]) {
+    // only pause if the tab is playing
+    if (mainLoopPause === false) { $('a.pause').click(); }
+    // $('#pause-message').remove();
+    // $('body').append('<div id="pause-message" class="message modal">Noticed you switched away, we\'ll resume the map</div>');
+  } else {
+    $('a.pause').click();
+    // $('#pause-message').hide(1500);
+  }
+}
+
+// Warn if the browser doesn't support addEventListener or the Page Visibility API
+if (typeof document.addEventListener === "undefined" || typeof document[hidden] === "undefined") {
+  // console.log("This demo requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.");
+} else {
+  // Handle page visibility change   
+  document.addEventListener(visibilityChange, handleVisibilityChange, false);
+}
