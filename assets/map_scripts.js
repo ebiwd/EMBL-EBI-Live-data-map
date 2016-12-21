@@ -35,7 +35,7 @@ map.options.minZoom = 1;
 
 var clusterSizeFactor = function(passedClusterSize) { // how we size the clusters
   pixelIncrease = 20; // constant to ensure a minimum size
-  return (passedClusterSize * 1.3) + pixelIncrease;
+  return (Math.sqrt(passedClusterSize) * 5) + pixelIncrease;
 }
 
 function newMarkerClusterGroup(clusterColors,targetClusterCSSClass,clusterPopUpHTML) {
@@ -57,12 +57,13 @@ function newMarkerClusterGroup(clusterColors,targetClusterCSSClass,clusterPopUpH
         numberToShow = cluster.getChildCount();
       }
       // make it "big" if more than 35
-      if (cluster.getChildCount() > 35) {
+      if (cluster.getChildCount() > 40) {
         sizeClass = 'big-cluster';
       }
+      var factoredSize = clusterSizeFactor(cluster.getChildCount());
       return markerIcon = new L.DivIcon({
-        iconSize: [clusterSizeFactor(cluster.getChildCount()), clusterSizeFactor(cluster.getChildCount())],
-        html: '<div class="' + targetClusterCSSClass + ' ' + sizeClass + '" style="border-radius:'+ clusterSizeFactor(cluster.getChildCount()) + 'px; line-height:'+ clusterSizeFactor(cluster.getChildCount()) + 'px; border: 1px solid rgb(202,210,211); ">' + numberToShow + '</div>'
+        iconSize: [factoredSize, factoredSize],
+        html: '<div class="' + targetClusterCSSClass + ' ' + sizeClass + '" style="border-radius:'+ factoredSize + 'px; line-height:'+ factoredSize + 'px; border: 1px solid rgb(202,210,211); ">' + numberToShow + '</div>'
       });
 
     }
