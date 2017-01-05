@@ -71,16 +71,10 @@
   <link rel="stylesheet" href="assets/map_styles.css" />
 </head>
 
-<body>
+<body class="display-unified">
   <div id="map"></div>
 
-  <div id="state-legend" class="legend modal">
-    <h4>Request type</h4>
-    <div class="markerClustersEBI"><span class="legend-icon" style='background-color: rgba(168,200,19,.4)'></span>EMBL-EBI</div>
-    <div class="markerClustersPortals"><span class="legend-icon" style='background-color: rgba(235,98,9,.4)'></span>Portals</div>
-    <div class="markerClustersUniprot"><span class="legend-icon" style='background-color: rgba(29,92,116,.4)'></span>Uniprot</div>
-    <div><a href="#" class="pause"><span class="icon icon-functional" data-icon="o"></span>Pause</a></div>
-  </div>
+  <div id="legend" class="legend modal"></div>
 
   <script src='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.js'></script>
   <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>

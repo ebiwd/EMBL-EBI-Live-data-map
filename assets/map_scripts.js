@@ -72,7 +72,7 @@ function newMarkerClusterGroup(clusterColors,targetClusterCSSClass,clusterPopUpH
 
   clusterName.on('clustermouseover', function(ev) {
     // Child markers for this cluster are a.layer.getAllChildMarkers()
-    L.popup().setLatLng(ev.latlng).setContent(clusterPopUpHTML).openOn(map); 
+    L.popup().setLatLng(ev.latlng).setContent(clusterPopUpHTML).openOn(map);
   });
   clusterName.on('clustermouseout', function(ev) {
     map.closePopup();
@@ -83,13 +83,13 @@ function newMarkerClusterGroup(clusterColors,targetClusterCSSClass,clusterPopUpH
 
 function processData(fetchedData) {
   var markerClustersTemporary = [];
-  
+
   fetchedData.eachLayer( function(marker) {
-    if (typeof marker.feature !== 'undefined') {            
+    if (typeof marker.feature !== 'undefined') {
       // add to marker group
       var a = marker.feature.geometry.coordinates;
       // var title = 'tesdt';
-      var markerNode = L.circleMarker(new L.LatLng(a[1], a[0]), { 
+      var markerNode = L.circleMarker(new L.LatLng(a[1], a[0]), {
         stroke: true,
         color: 'rgb(202,210,211)',
         weight: '1',
@@ -106,8 +106,8 @@ function processData(fetchedData) {
   });
 
   // process new nodes
-  for(var index in markerClustersTemporary) { 
-    removeAndAddNodes(index,markerClustersTemporary[index]);  
+  for(var index in markerClustersTemporary) {
+    removeAndAddNodes(index,markerClustersTemporary[index]);
   }
 
 }
@@ -124,7 +124,7 @@ function removeAndAddNodes(targetClusterGroup,queueToAdd) {
     if (queueToAdd.length == 0) {
       clearInterval(addNodesVar); // we're done
     } else {
-      var nodeToProcess = queueToAdd.pop(); 
+      var nodeToProcess = queueToAdd.pop();
 
       if ((nodeToProcess._latlng.lat == '0') && (nodeToProcess._latlng.lng == '0')) {
         return false; // exit if the location didn't geocode
@@ -133,14 +133,14 @@ function removeAndAddNodes(targetClusterGroup,queueToAdd) {
       // add dot to map
       targetClusterGroup.addLayer(nodeToProcess);
       // Performance note:
-      // If things get sluggish, we should consider using the plural function "addLayers" 
+      // If things get sluggish, we should consider using the plural function "addLayers"
       // view-source:http://leaflet.github.io/Leaflet.markercluster/example/marker-clustering-realworld.50000.html
       // We could also group the source CSV to say how many occurances of each lat/long there is
 
       // schedule marker removal
-      setTimeout(function() { 
+      setTimeout(function() {
         scheduledNodeRemoval(targetClusterGroup,nodeToProcess);
-      }, lifeSpan * 2); 
+      }, lifeSpan * 2);
     }
   }
 
@@ -153,9 +153,9 @@ function scheduledNodeRemoval(targetClusterGroup,targetNode) {
     targetClusterGroup.removeLayer(targetNode);
   } else {
     // wait XXms and check again
-    setTimeout(function() { 
+    setTimeout(function() {
       scheduledNodeRemoval(targetClusterGroup,targetNode);
-    }, lifeSpan); 
+    }, lifeSpan);
   }
 }
 
@@ -171,27 +171,27 @@ function runClusters() {
     type: "GET",
     url: 'parseLogMap.php?file=all&cachebust='+Math.floor((Math.random() * 1000) + 1),
     dataType: "text",
-    success: function(data, textStatus, request) { 
+    success: function(data, textStatus, request) {
       // compare the cache file time to request server time and if it's out of step, take steps to align with "Fresh" server time
       var offset = 0;
       if (request.getResponseHeader('Map-cache-creation') > 0) {
         offset = request.getResponseHeader('Map-cache-server-time') - request.getResponseHeader('Map-cache-creation');
       }
       if (offset === 0) {
-        // tell user map is fresh, but wait for old dots to sync up first 
-        setTimeout(function() { 
-          $('.leaflet-control-attribution .data-freshness').html('Map is fresh ');       
+        // tell user map is fresh, but wait for old dots to sync up first
+        setTimeout(function() {
+          $('.leaflet-control-attribution .data-freshness').html('Map is fresh ');
         }, lifeSpan - 500 );
       } else {
         // inch closer to actual time
         window.clearInterval(mainLoop);
         mainLoopPause = true;
-        setTimeout(function() { 
-          mainLoop = window.setInterval(runClusters, lifeSpan); // schedule future updates  
+        setTimeout(function() {
+          mainLoop = window.setInterval(runClusters, lifeSpan); // schedule future updates
           mainLoopPause = false;
         }, 500 );
 
-        $('.leaflet-control-attribution .data-freshness').html('Data is ' + offset + ' seconds stale ... compensating. ');       
+        $('.leaflet-control-attribution .data-freshness').html('Data is ' + offset + ' seconds stale ... compensating. ');
 
       }
       parseDate(data,offset);
@@ -223,41 +223,57 @@ map.addLayer(markerClustersUniprot);
 var lifeSpan = 6000; // how quickly we fetch data, and how long each dot lasts
  // NOTE: this needs to match up with the server side cach frequency and needs to be faster
 var mainLoopPause = false; // functionality for a "pause button"
-var mainLoop = window.setInterval(runClusters, lifeSpan); // schedule futur updates  
+var mainLoop = window.setInterval(runClusters, lifeSpan); // schedule futur updates
 
 // add a holder for data freshness
 $('.leaflet-control-attribution').prepend('<span class="data-freshness"></span> ');
 
-// run the data pull immediately on strap 
-runClusters(); 
+// run the data pull immediately on strap
+runClusters();
 
-// Pause toggling
-$('a.pause').on('click',function(){
-  if (mainLoopPause === false) {
-    mainLoopPause = true;
-    $('a.pause').html('<span class="icon icon-functional" data-icon="v"></span>Play');
-  } else {
-    mainLoopPause = false;
-    $('a.pause').html('<span class="icon icon-functional" data-icon="o"></span>Pause');
-  }
-});
+// legend stuff
+function createLegend () {
+  var legendHtml = '<h4>Request type</h4>' +
+      '<div class="markerClustersEBI"><span class="legend-icon" style="background-color: rgba(168,200,19,.4)"></span>EMBL-EBI</div>' +
+      '<div class="markerClustersPortals"><span class="legend-icon" style="background-color: rgba(235,98,9,.4)"></span>Portals</div>' +
+      '<div class="markerClustersUniprot"><span class="legend-icon" style="background-color: rgba(29,92,116,.4)"></span>Uniprot</div>' +
+      '<div><a href="#" class="display-toggle unified"><span class="icon icon-functional" data-icon="/"></span>Use only one colour</a></div>' +
+      '<div><a href="#" class="pause"><span class="icon icon-functional" data-icon="o"></span>Pause</a></div>';
+  $('#legend').html(legendHtml);
 
-// Bonus: on IE10+ (and other modern browsers), pause the map when the tab doesn't show
-// https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+  // Pause toggling
+  $('a.pause').on('click',function(){
+    if (mainLoopPause === false) {
+      mainLoopPause = true;
+      $('a.pause').html('<span class="icon icon-functional" data-icon="v"></span>Play');
+    } else {
+      mainLoopPause = false;
+      $('a.pause').html('<span class="icon icon-functional" data-icon="o"></span>Pause');
+    }
+  });
 
-// Set the name of the hidden property and the change event for visibility
-var hidden, visibilityChange; 
-if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
-  hidden = "hidden";
-  visibilityChange = "visibilitychange";
-} else if (typeof document.msHidden !== "undefined") {
-  hidden = "msHidden";
-  visibilityChange = "msvisibilitychange";
-} else if (typeof document.webkitHidden !== "undefined") {
-  hidden = "webkitHidden";
-  visibilityChange = "webkitvisibilitychange";
+  // Legend toggling
+  $('a.display-toggle').on('click',function() {
+    var invokedLegend = 'none';
+    // which has the user requested?
+    if ($(this).hasClass('unified')) {
+      invokedLegend = 'unified';
+    }
+
+    // toggle button state with opacity
+    var invokedLegendIcon = 'a.display-toggle.'+invokedLegend+' span.icon';
+    if ($(invokedLegendIcon).css('opacity')== 1) {
+      $(invokedLegendIcon).css('opacity',.25);
+      $('body').removeClass('display-'+invokedLegend);
+    } else {
+      $(invokedLegendIcon).css('opacity',1);
+      $('body').addClass('display-'+invokedLegend);
+    }
+  });
 }
- 
+
+createLegend();
+
 function handleVisibilityChange() {
   if (document[hidden]) {
     // only pause if the tab is playing
@@ -270,10 +286,27 @@ function handleVisibilityChange() {
   }
 }
 
+// Bonus: on IE10+ (and other modern browsers), pause the map when the tab doesn't show
+// https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+
+// Set the name of the hidden property and the change event for visibility
+var hidden, visibilityChange;
+if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+  hidden = "hidden";
+  visibilityChange = "visibilitychange";
+} else if (typeof document.msHidden !== "undefined") {
+  hidden = "msHidden";
+  visibilityChange = "msvisibilitychange";
+} else if (typeof document.webkitHidden !== "undefined") {
+  hidden = "webkitHidden";
+  visibilityChange = "webkitvisibilitychange";
+}
+
+
 // Warn if the browser doesn't support addEventListener or the Page Visibility API
 if (typeof document.addEventListener === "undefined" || typeof document[hidden] === "undefined") {
   // console.log("This demo requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.");
 } else {
-  // Handle page visibility change   
+  // Handle page visibility change
   document.addEventListener(visibilityChange, handleVisibilityChange, false);
 }

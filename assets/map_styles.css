@@ -11,7 +11,11 @@ body { margin:0; padding:0; }
 
 .leaflet-marker-icon div { color: rgba(0,0,0,.4); mix-blend-mode: multiply; }
 
+body.display-unified .leaflet-marker-icon div.markerClustersPortals,
+body.display-unified .leaflet-marker-icon div.markerClustersUniprot,
 .leaflet-marker-icon div.markerClustersEBI { background: rgba(168,200,19,.4); }
+body.display-unified .leaflet-marker-icon div.markerClustersPortals:hover,
+body.display-unified .leaflet-marker-icon div.markerClustersUniprot:hover,
 .leaflet-marker-icon div.markerClustersEBI:hover { background: rgba(168,200,19,1); color: #fff; }
 
 .leaflet-marker-icon div.markerClustersPortals { background: rgba(235,98,9,.4); }
@@ -52,6 +56,13 @@ body { margin:0; padding:0; }
   height: 10px;
   margin-right: 5px;
   width: 10px;
+}
+
+body.display-unified .legend h4,
+body.display-unified .legend div.markerClustersPortals,
+body.display-unified .legend div.markerClustersUniprot,
+body.display-unified .legend div.markerClustersEBI {
+  display: none;
 }
 
 .legend a { text-decoration: none; color: #666; }
