@@ -234,12 +234,12 @@ runClusters();
 // legend stuff
 function createLegend () {
   var legendHtml = '<h4>Request type</h4>' +
-      '<div class="markerClustersEBI"><span class="legend-icon" style="background-color: rgba(168,200,19,.4)"></span>EMBL-EBI</div>' +
-      '<div class="markerClustersPortals"><span class="legend-icon" style="background-color: rgba(235,98,9,.4)"></span>Portals</div>' +
-      '<div class="markerClustersUniprot"><span class="legend-icon" style="background-color: rgba(29,92,116,.4)"></span>Uniprot</div>' +
-      '<div><a href="#" class="display-toggle unified"><span class="icon icon-functional" data-icon="/"></span>Use only one colour</a></div>' +
+      '<div class="markerClustersEBI"><a href="#" class="display-toggle ebi"><span class="legend-icon"></span>EMBL-EBI</a></div>' +
+      '<div class="markerClustersPortals"><a href="#" class="display-toggle portals"><span class="legend-icon"></span>Portals</a></div>' +
+      '<div class="markerClustersUniprot"><a href="#" class="display-toggle uniprot"><span class="legend-icon"></span>Uniprot</a></div>' +
+      '<div><a href="#" class="display-toggle unified"><span class="legend-icon icon icon-functional" data-icon="/"></span>Use only one colour</a></div>' +
       '<div><a href="#" class="pause"><span class="icon icon-functional" data-icon="o"></span>Pause</a></div>';
-  $('#legend').html(legendHtml);
+  $('.legend').html(legendHtml);
 
   // Pause toggling
   $('a.pause').on('click',function(){
@@ -256,12 +256,13 @@ function createLegend () {
   $('a.display-toggle').on('click',function() {
     var invokedLegend = 'none';
     // which has the user requested?
-    if ($(this).hasClass('unified')) {
-      invokedLegend = 'unified';
-    }
+    if ($(this).hasClass('unified')) { invokedLegend = 'unified'; }
+    if ($(this).hasClass('ebi')) { invokedLegend = 'ebi'; }
+    if ($(this).hasClass('portals')) { invokedLegend = 'portals'; }
+    if ($(this).hasClass('uniprot')) { invokedLegend = 'uniprot'; }
 
     // toggle button state with opacity
-    var invokedLegendIcon = 'a.display-toggle.'+invokedLegend+' span.icon';
+    var invokedLegendIcon = 'a.display-toggle.'+invokedLegend+' span.legend-icon';
     if ($(invokedLegendIcon).css('opacity')== 1) {
       $(invokedLegendIcon).css('opacity',.25);
       $('body').removeClass('display-'+invokedLegend);

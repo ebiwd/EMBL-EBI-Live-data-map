@@ -11,6 +11,25 @@ body { margin:0; padding:0; }
 
 .leaflet-marker-icon div { color: rgba(0,0,0,.4); mix-blend-mode: multiply; }
 
+/* all markers should be hidden unless requested */
+body .leaflet-marker-icon div.markerClustersPortals,
+body .leaflet-marker-icon div.markerClustersUniprot,
+body .leaflet-marker-icon div.markerClustersEBI { display:none; }
+
+
+body.display-ebi .leaflet-marker-icon div.markerClustersEBI { display: block; background: rgba(168,200,19,.4); }
+
+body.display-portals .leaflet-marker-icon div.markerClustersPortals { display: block; background: rgba(235,98,9,.4); }
+.leaflet-marker-icon div.markerClustersPortals:hover { background: rgba(235,98,9,1); color: #fff; }
+
+body.display-uniprot .leaflet-marker-icon div.markerClustersUniprot { display: block; background: rgba(29,92,116,.4); }
+.leaflet-marker-icon div.markerClustersUniprot:hover { background: rgba(29,92,116,1); color: #fff; }
+
+body .legend div.markerClustersPortals .legend-icon { background-color: rgba(235,98,9,.4); }
+body .legend div.markerClustersUniprot .legend-icon { background-color: rgba(29,92,116,.4); }
+body .legend div.markerClustersEBI .legend-icon { background-color: rgba(168,200,19,.4); }
+
+/* unified colours for markers */
 body.display-unified .leaflet-marker-icon div.markerClustersPortals,
 body.display-unified .leaflet-marker-icon div.markerClustersUniprot,
 .leaflet-marker-icon div.markerClustersEBI { background: rgba(168,200,19,.4); }
@@ -18,11 +37,10 @@ body.display-unified .leaflet-marker-icon div.markerClustersPortals:hover,
 body.display-unified .leaflet-marker-icon div.markerClustersUniprot:hover,
 .leaflet-marker-icon div.markerClustersEBI:hover { background: rgba(168,200,19,1); color: #fff; }
 
-.leaflet-marker-icon div.markerClustersPortals { background: rgba(235,98,9,.4); }
-.leaflet-marker-icon div.markerClustersPortals:hover { background: rgba(235,98,9,1); color: #fff; }
+body.display-unified .legend div.markerClustersPortals .legend-icon,
+body.display-unified .legend div.markerClustersUniprot .legend-icon { background-color: rgba(168,200,19,.4); }
 
-.leaflet-marker-icon div.markerClustersUniprot { background: rgba(29,92,116,.4); }
-.leaflet-marker-icon div.markerClustersUniprot:hover { background: rgba(29,92,116,1); color: #fff; }
+
 
 .modal {
   background-color: #fff;
@@ -58,12 +76,6 @@ body.display-unified .leaflet-marker-icon div.markerClustersUniprot:hover,
   width: 10px;
 }
 
-body.display-unified .legend h4,
-body.display-unified .legend div.markerClustersPortals,
-body.display-unified .legend div.markerClustersUniprot,
-body.display-unified .legend div.markerClustersEBI {
-  display: none;
-}
 
 .legend a { text-decoration: none; color: #666; }
 .legend a .icon { padding-right: 1px; }
