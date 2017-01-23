@@ -297,7 +297,7 @@ function createLegend () {
   }
 
   // does the user want to hide the legend?
-  var passedParam2 = location.search.split('hidelegend=')[1].split('&')[0];
+  var passedParam2 = location.search.split('hideLegend=')[1].split('&')[0];
   if ((passedParam2 != 'false') &&(passedParam2 != undefined)) {
     $('.legend.modal').hide();
   }
