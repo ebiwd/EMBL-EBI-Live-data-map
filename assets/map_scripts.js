@@ -252,26 +252,58 @@ function createLegend () {
     }
   });
 
-  // Legend toggling
-  $('a.display-toggle').on('click',function() {
-    var invokedLegend = 'none';
-    // which has the user requested?
-    if ($(this).hasClass('unified')) { invokedLegend = 'unified'; }
-    if ($(this).hasClass('ebi')) { invokedLegend = 'ebi'; }
-    if ($(this).hasClass('portals')) { invokedLegend = 'portals'; }
-    if ($(this).hasClass('uniprot')) { invokedLegend = 'uniprot'; }
 
-    // toggle button state with opacity
-    var invokedLegendIcon = 'a.display-toggle.'+invokedLegend+' span.legend-icon';
+  // toggle button state with opacity
+  function invokeLegendIcon(request) {
+    var invokedLegendIcon = 'a.display-toggle.'+request+' span.legend-icon';
     if ($(invokedLegendIcon).css('opacity')== 1) {
       $(invokedLegendIcon).css('opacity',.25);
-      $('body').removeClass('display-'+invokedLegend);
+      $('body').removeClass('display-'+request);
     } else {
       $(invokedLegendIcon).css('opacity',1);
-      $('body').addClass('display-'+invokedLegend);
+      $('body').addClass('display-'+request);
     }
+  }
+
+  // Legend toggling
+  $('a.display-toggle').on('click',function() {
+    // which has the user requested?
+    if ($(this).hasClass('unified')) { invokeLegendIcon('unified'); }
+    if ($(this).hasClass('ebi')) { invokeLegendIcon('ebi'); }
+    if ($(this).hasClass('portals')) { invokeLegendIcon('portals'); }
+    if ($(this).hasClass('uniprot')) { invokeLegendIcon('uniprot'); }
   });
+
+  // parse a passed param
+  var passedParam = location.search.split('legend=')[1].split('&')[0];
+  if (passedParam != undefined) {
+    // now we disable all portals
+    invokeLegendIcon('unified');
+    invokeLegendIcon('portals');
+    invokeLegendIcon('uniprot');
+    invokeLegendIcon('ebi');
+
+    // enable jsut the one the user wants
+    if (passedParam != 'distinct') {
+      invokeLegendIcon(passedParam);
+    }
+
+    if (passedParam == 'distinct') {
+      // we've already turned off unified, show just show all protals
+      invokeLegendIcon('portals');
+      invokeLegendIcon('uniprot');
+      invokeLegendIcon('ebi');
+    }
+  }
+
+  // does the user want to hide the legend?
+  var passedParam2 = location.search.split('hidelegend=')[1].split('&')[0];
+  if ((passedParam2 != 'false') &&(passedParam2 != undefined)) {
+    $('.legend.modal').hide();
+  }
+
 }
+
 
 createLegend();
 
