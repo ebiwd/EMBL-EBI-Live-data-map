@@ -275,8 +275,9 @@ function createLegend () {
   });
 
   // parse a passed param
-  var passedParam = location.search.split('legend=')[1].split('&')[0];
+  var passedParam = location.search.split('legend=')[1];
   if (passedParam != undefined) {
+    passedParam = passedParam.split('&')[0]; // drop anything after &
     // now we disable all portals
     invokeLegendIcon('unified');
     invokeLegendIcon('portals');
@@ -299,6 +300,7 @@ function createLegend () {
   // does the user want to hide the legend?
   var passedParam2 = location.search.split('hideLegend=')[1].split('&')[0];
   if ((passedParam2 != 'false') &&(passedParam2 != undefined)) {
+    passedParam2 = passedParam2.split('&')[0]; // drop anything after &
     $('.legend.modal').hide();
   }
 
