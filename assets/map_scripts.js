@@ -203,7 +203,7 @@ function runClusters() {
       if (offset === 0) {
         // tell user map is fresh, but wait for old dots to sync up first
         setTimeout(function() {
-          if (passedParamSlimClient != undefined) {
+          if (passedParamSlimClient == undefined) {
             $('.leaflet-control-attribution .data-freshness').html('Map is fresh ');
           }
         }, lifeSpan - 500 );
@@ -216,7 +216,7 @@ function runClusters() {
           mainLoopPause = false;
         }, 500 );
 
-        if (passedParamSlimClient != undefined) {
+        if (passedParamSlimClient == undefined) {
           $('.leaflet-control-attribution .data-freshness').html('Data is ' + offset + ' seconds stale ... compensating. ');
         }
 
