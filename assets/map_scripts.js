@@ -7,6 +7,30 @@ L.mapbox.accessToken = 'pk.eyJ1Ijoia2hhd2tpbnNlYmkiLCJhIjoiY2ludTZ2M3ltMDBtNXczb
 
 var map = L.mapbox.map('map');
 
+// process passed params
+// shows just one type or make types a distinct colour?
+// options: unified, portals, uniprot, ebi, distinct
+var passedParam = location.search.split('legend=')[1];
+// does the user want to hide the legend?
+var passedParamLegend = location.search.split('hideLegend=')[1];
+if ((passedParamLegend != 'false') && (passedParamLegend != undefined)) {
+  passedParamLegend = passedParamLegend.split('&')[0]; // drop anything after &
+  $('.legend.modal').hide();
+}
+// throttle the display for older devices (like the south building monoliths)
+var passedParamSlimClient = location.search.split('slimClient=')[1];
+if ((passedParamSlimClient != undefined)) {
+  // passedParamSlimClient = passedParamSlimClient.split('&')[0]; // drop anything after &
+  var lifeSpan = 24000;
+}
+// debug metrics
+var debug = false;
+var passedParamDebugMetrics = location.search.split('debug=')[1];
+if ((passedParamDebugMetrics != 'false') && (passedParamDebugMetrics != undefined)) {
+  // passedParamDebugMetrics = passedParamSlimClient.split('&')[0]; // drop anything after &
+  debug = true;
+}
+
 // show sunrise and sunset
 // http://joergdietrich.github.io/Leaflet.Terminator/
 var daynightoverlay = L.terminator({className:'daynightoverlay'});
@@ -14,7 +38,7 @@ map.setView([30, daynightoverlay.getLatLngs()[0][700]['lng']], 2);
 // map.setView([30, 10], 3);
 daynightoverlay.addTo(map);
 
-setInterval(function(){updateTerminator(daynightoverlay)}, 2000);
+setInterval(function(){updateTerminator(daynightoverlay)}, 12000);
 function updateTerminator(t) {
   var t2 = L.terminator();
   t.setLatLngs(t2.getLatLngs());
@@ -69,7 +93,6 @@ function newMarkerClusterGroup(clusterColors,targetClusterCSSClass,clusterPopUpH
     }
   });
 
-
   clusterName.on('clustermouseover', function(ev) {
     // Child markers for this cluster are a.layer.getAllChildMarkers()
     L.popup().setLatLng(ev.latlng).setContent(clusterPopUpHTML).openOn(map);
@@ -109,7 +132,6 @@ function processData(fetchedData) {
   for(var index in markerClustersTemporary) {
     removeAndAddNodes(index,markerClustersTemporary[index]);
   }
-
 }
 
 // Progressivley load and unload nodes based on the number of nodes to move, and how quickly we pull data.
@@ -161,6 +183,7 @@ function scheduledNodeRemoval(targetClusterGroup,targetNode) {
 
 // loop to keep clusters updating
 function runClusters() {
+  if (debug) { console.log(window.performance.memory); }
 
   if (mainLoopPause === true) return;
 
@@ -180,7 +203,9 @@ function runClusters() {
       if (offset === 0) {
         // tell user map is fresh, but wait for old dots to sync up first
         setTimeout(function() {
-          $('.leaflet-control-attribution .data-freshness').html('Map is fresh ');
+          if (passedParamSlimClient != undefined) {
+            $('.leaflet-control-attribution .data-freshness').html('Map is fresh ');
+          }
         }, lifeSpan - 500 );
       } else {
         // inch closer to actual time
@@ -191,7 +216,9 @@ function runClusters() {
           mainLoopPause = false;
         }, 500 );
 
-        $('.leaflet-control-attribution .data-freshness').html('Data is ' + offset + ' seconds stale ... compensating. ');
+        if (passedParamSlimClient != undefined) {
+          $('.leaflet-control-attribution .data-freshness').html('Data is ' + offset + ' seconds stale ... compensating. ');
+        }
 
       }
       parseDate(data,offset);
@@ -220,10 +247,10 @@ map.addLayer(markerClustersEBI);
 map.addLayer(markerClustersPortals);
 map.addLayer(markerClustersUniprot);
 
-var lifeSpan = 6000; // how quickly we fetch data, and how long each dot lasts
- // NOTE: this needs to match up with the server side cach frequency and needs to be faster
+var lifeSpan = lifeSpan || 6000; // how quickly we fetch data, and how long each dot lasts
+if (debug) { console.log('Data track loop is', lifeSpan); }
 var mainLoopPause = false; // functionality for a "pause button"
-var mainLoop = window.setInterval(runClusters, lifeSpan); // schedule futur updates
+var mainLoop = window.setInterval(runClusters, lifeSpan); // schedule future updates
 
 // add a holder for data freshness
 $('.leaflet-control-attribution').prepend('<span class="data-freshness"></span> ');
@@ -252,7 +279,6 @@ function createLegend () {
     }
   });
 
-
   // toggle button state with opacity
   function invokeLegendIcon(request) {
     var invokedLegendIcon = 'a.display-toggle.'+request+' span.legend-icon';
@@ -275,7 +301,6 @@ function createLegend () {
   });
 
   // parse a passed param
-  var passedParam = location.search.split('legend=')[1];
   if (passedParam != undefined) {
     passedParam = passedParam.split('&')[0]; // drop anything after &
     // now we disable all portals
@@ -295,13 +320,6 @@ function createLegend () {
       invokeLegendIcon('uniprot');
       invokeLegendIcon('ebi');
     }
-  }
-
-  // does the user want to hide the legend?
-  var passedParam2 = location.search.split('hideLegend=')[1];
-  if ((passedParam2 != 'false') &&(passedParam2 != undefined)) {
-    passedParam2 = passedParam2.split('&')[0]; // drop anything after &
-    $('.legend.modal').hide();
   }
 
 }
