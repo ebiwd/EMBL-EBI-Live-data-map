@@ -192,7 +192,7 @@ function runClusters() {
   var date = new Date(),
       current_hour = date.getHours(),
       reboot_hour = 1;
-  if ((current_hour === reboot_hour) && ((Date.now() - loadTimestamp) > 60*60*1000) {
+  if ((current_hour === reboot_hour) && ((Date.now() - loadTimestamp) > 60*60*1000)) {
     location.reload(false) // false = reload from cache
   }
   
