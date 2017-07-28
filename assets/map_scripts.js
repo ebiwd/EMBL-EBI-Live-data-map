@@ -3,6 +3,8 @@
 // https://github.com/Leaflet/Leaflet.markercluster#usage
 // http://wwwdev.ebi.ac.uk/ebiwebtrafficmap/kmlvector.html
 
+var loadTimestamp = Date.now(); // capture time at page load
+
 L.mapbox.accessToken = 'pk.eyJ1Ijoia2hhd2tpbnNlYmkiLCJhIjoiY2ludTZ2M3ltMDBtNXczbTJueW85ZmJjNyJ9.u6SIfnrYvGe6WFP3fOtaVQ';
 
 var map = L.mapbox.map('map');
@@ -184,7 +186,17 @@ function scheduledNodeRemoval(targetClusterGroup,targetNode) {
 // loop to keep clusters updating
 function runClusters() {
   if (debug) { console.log(window.performance.memory); }
-
+  
+  // do we need to refresh the page
+  // check if it's 1 in the morning and the page has been up for at least 1 hour
+  var date = new Date(),
+      current_hour = date.getHours(),
+      reboot_hour = 1;
+  if ((current_hour === reboot_hour) && ((Date.now() - loadTimestamp) > 60*60*1000) {
+    location.reload(false) // false = reload from cache
+  }
+  
+  // are we paused?
   if (mainLoopPause === true) return;
 
   // we just ask the server and it will return all desired data sets
