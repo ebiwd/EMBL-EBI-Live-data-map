@@ -186,7 +186,7 @@ function scheduledNodeRemoval(targetClusterGroup,targetNode) {
 // loop to keep clusters updating
 function runClusters() {
   if (debug) { console.log(window.performance.memory); }
-  
+
   // do we need to refresh the page
   // check if it's 1 in the morning and the page has been up for at least 1 hour
   var date = new Date(),
@@ -195,7 +195,7 @@ function runClusters() {
   if ((current_hour === reboot_hour) && ((Date.now() - loadTimestamp) > 60*60*1000)) {
     location.reload(false) // false = reload from cache
   }
-  
+
   // are we paused?
   if (mainLoopPause === true) return;
 
@@ -206,6 +206,7 @@ function runClusters() {
     type: "GET",
     url: 'parseLogMap.php?file=all&cachebust='+Math.floor((Math.random() * 1000) + 1),
     dataType: "text",
+    timeout:3000,
     success: function(data, textStatus, request) {
       // compare the cache file time to request server time and if it's out of step, take steps to align with "Fresh" server time
       var offset = 0;
@@ -234,6 +235,11 @@ function runClusters() {
 
       }
       parseDate(data,offset);
+    },
+    error: function(jqXHR, textStatus){
+      if(textStatus === 'timeout') {
+        console.log('Unable to get data source in a timely fashion',jqXHR);
+      }
     }
   });
 
