@@ -238,7 +238,13 @@ function runClusters() {
     },
     error: function(jqXHR, textStatus){
       if(textStatus === 'timeout') {
-        console.log('Unable to get data source in a timely fashion',jqXHR);
+        // console.log('Unable to get data source in a timely fashion',jqXHR);
+        if (Raven.isSetup()) {
+          Raven.captureMessage('Unable to get data source in a timely fashion', {
+            level: 'warning' // one of 'info', 'warning', or 'error'
+          });
+          Raven.captureException(jqXHR);
+        }
       }
     }
   });
