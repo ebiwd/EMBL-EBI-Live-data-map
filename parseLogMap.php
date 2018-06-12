@@ -23,7 +23,7 @@
     if (time() - filemtime($cacheFileName) < 6) {
       header("Map-cache-creation: ". urlencode(filemtime($cacheFileName)));
       header("Map-cache-server-time: ". urlencode(time()));
-      require $cacheFileName; 
+      require $cacheFileName;
       exit; // dump the cahced contents and go home
     }
   }
@@ -40,7 +40,7 @@
   // what's been requested
   switch ($desiredFile) {
     case 'all':
-    default: 
+    default:
       $desiredFile = 'all'; // cleanup wild url requests
       $desiredFiles = array($dataSources["ebi"],$dataSources["portals"],$dataSources["uniprot"]);
       $pointType = array('markerClustersEBI','markerClustersPortals','markerClustersUniprot');
@@ -66,14 +66,28 @@
     curl_setopt($curl_handle,CURLOPT_URL,$url);
     curl_setopt($curl_handle,CURLOPT_CONNECTTIMEOUT,2);
     curl_setopt($curl_handle,CURLOPT_RETURNTRANSFER,1);
-    $buffer = curl_exec($curl_handle); 
+    $buffer = curl_exec($curl_handle);
     curl_close($curl_handle);
-  
+
     if (empty($buffer)) {
       return "Nothing returned from url.";
     } else {
       return simplexml_load_string($buffer);
     }
+  }
+
+  // Reusable function to fuzzy-ify the lat/long string
+  // in: 0.7000,51.5333,0
+  // out: 0.70,51.53,0
+  function lowerPrecision($incoming) {
+    $processed = explode(",", $incoming);
+
+    $processed[0] = round($processed[0], 2);
+    $processed[1] = round($processed[1], 2);
+
+    $output = $processed[0] . "," . $processed[1] . "," . $processed[2];
+
+    return $output;
   }
 
   // Write the data CSV
@@ -90,7 +104,7 @@
     $rowCounter = 0;
     foreach($fetchedData as $item) {
       $rowCounter++;
-      $output .= $pointType[$key] . ",".$item->Point->coordinates . "\r\n";
+      $output .= $pointType[$key] . "," . lowerPrecision($item->Point->coordinates) . "\r\n";
     }
   }
 
