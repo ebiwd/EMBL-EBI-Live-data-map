@@ -77,7 +77,6 @@ L.tileLayer(
   'https://api.mapbox.com/styles/v1/khawkinsebi/cio2mav7q0018c2nk2vvg8xgt/tiles/{z}/{x}/{y}?access_token=' + L.mapbox.accessToken, {
       // maxZoom: 6,
       // minZoom: 3,
-      zoom: 8,
       tileSize: 512,
       zoomOffset: -1,
       attribution: '© <a href="//www.ebi.ac.uk/about">EMBL-EBI</a> © <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
