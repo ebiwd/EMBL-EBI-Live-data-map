@@ -4,6 +4,9 @@
 // http://wwwdev.ebi.ac.uk/ebiwebtrafficmap/kmlvector.html
 
 var loadTimestamp = Date.now(); // capture time at page load
+var initialZoomLevel = 2, // default zoom level
+    initialLat = 30,
+    initialLon = -10.5;
 
 L.mapbox.accessToken = 'pk.eyJ1Ijoia2hhd2tpbnNlYmkiLCJhIjoiY2ludTZ2M3ltMDBtNXczbTJueW85ZmJjNyJ9.u6SIfnrYvGe6WFP3fOtaVQ';
 
@@ -32,12 +35,35 @@ if ((passedParamDebugMetrics != 'false') && (passedParamDebugMetrics != undefine
   // passedParamDebugMetrics = passedParamSlimClient.split('&')[0]; // drop anything after &
   debug = true;
 }
+// passed zoom param
+var passedParamZoom = location.search.split('zoomLevel=')[1];
+if (passedParamZoom != undefined) {
+  passedParamZoom = passedParamZoom.split('&')[0]; // drop anything after &
+  initialZoomLevel = parseInt(passedParamZoom,10);
+}
+
+// passed lat param
+var passedParamLat = location.search.split('lat=')[1];
+if (passedParamLat != undefined) {
+  passedParamLat = passedParamLat.split('&')[0]; // drop anything after &
+  initialLat = parseFloat(passedParamLat,10);
+}
+
+// passed lon param
+var passedParamLon = location.search.split('lon=')[1];
+if (passedParamLon != undefined) {
+  passedParamLon = passedParamLon.split('&')[0]; // drop anything after &
+  initialLon = parseFloat(passedParamLon,10);
+}
 
 // show sunrise and sunset
 // http://joergdietrich.github.io/Leaflet.Terminator/
 var daynightoverlay = L.terminator({className:'daynightoverlay'});
-map.setView([30, daynightoverlay.getLatLngs()[0][700]['lng']], 2);
-// map.setView([30, 10], 3);
+
+// Set the intial lat, lon and zoom
+// daynightoverlay.getLatLngs()[0][700]['lng']
+map.setView([initialLat, initialLon], initialZoomLevel);
+
 daynightoverlay.addTo(map);
 
 setInterval(function(){updateTerminator(daynightoverlay)}, 12000);
@@ -51,6 +77,7 @@ L.tileLayer(
   'https://api.mapbox.com/styles/v1/khawkinsebi/cio2mav7q0018c2nk2vvg8xgt/tiles/{z}/{x}/{y}?access_token=' + L.mapbox.accessToken, {
       // maxZoom: 6,
       // minZoom: 3,
+      zoom: 8,
       tileSize: 512,
       zoomOffset: -1,
       attribution: '© <a href="//www.ebi.ac.uk/about">EMBL-EBI</a> © <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
