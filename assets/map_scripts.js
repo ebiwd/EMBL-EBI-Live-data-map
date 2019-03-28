@@ -37,23 +37,26 @@ if ((passedParamDebugMetrics != 'false') && (passedParamDebugMetrics != undefine
 }
 // passed zoom param
 var passedParamZoom = location.search.split('zoomLevel=')[1];
-if (passedParamZoom != undefined) {
-  passedParamZoom = passedParamZoom.split('&')[0]; // drop anything after &
-  initialZoomLevel = parseInt(passedParamZoom,10);
+if (passedParamZoom !== undefined) {
+   // drop anything after &, convert to int
+   passedParamZoom = parseInt(passedParamZoom.split('&')[0], 10);
+  if (!isNaN(passedParamZoom)) initialZoomLevel = passedParamZoom;
 }
 
 // passed lat param
 var passedParamLat = location.search.split('lat=')[1];
-if (passedParamLat != undefined) {
-  passedParamLat = passedParamLat.split('&')[0]; // drop anything after &
-  initialLat = parseFloat(passedParamLat,10);
+if (passedParamLat !== undefined) {
+  // drop anything after &, convert to float
+  passedParamLat = parseFloat(passedParamLat.split('&')[0]);
+  if (!isNaN(passedParamLat)) initialLat = passedParamLat;
 }
 
 // passed lon param
 var passedParamLon = location.search.split('lon=')[1];
-if (passedParamLon != undefined) {
-  passedParamLon = passedParamLon.split('&')[0]; // drop anything after &
-  initialLon = parseFloat(passedParamLon,10);
+if (passedParamLon !== undefined) {
+  // drop anything after &, convert to float
+  passedParamLon = parseFloat(passedParamLon.split('&')[0]);
+  if (!isNaN(passedParamLon)) initialLon = passedParamLon;
 }
 
 // show sunrise and sunset
