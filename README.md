@@ -22,4 +22,3 @@ With that in mind there are two development scenarios.
   - You'll be [using Browsersync](https://www.browsersync.io/#install):
   - `npm install -g browser-sync`
   - `browser-sync start --server --index live-data-map.html --port 5000`
-  - `node localDevelopment.js`
