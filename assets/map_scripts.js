@@ -3,6 +3,7 @@
 // https://github.com/Leaflet/Leaflet.markercluster#usage
 // http://wwwdev.ebi.ac.uk/ebiwebtrafficmap/kmlvector.html
 
+var config = {}; // object to store config options passed in the URL
 var loadTimestamp = Date.now(); // capture time at page load
 var initialZoomLevel = 2, // default zoom level
     initialLat = 30,
@@ -12,51 +13,62 @@ L.mapbox.accessToken = 'pk.eyJ1Ijoia2hhd2tpbnNlYmkiLCJhIjoiY2ludTZ2M3ltMDBtNXczb
 
 var map = L.mapbox.map('map');
 
-// process passed params
-// shows just one type or make types a distinct colour?
+/**
+ * Take a param string and return the paired value.
+ * @param {string} param - The param to look for.
+ * @param {string} [currentLocation] - Optionally pass the url string to parse, otherwise uses `location`
+ */
+function paraseParam(param,currentLocation) {
+  var currentLocation = currentLocation || location;
+  var paramValue = location.search.split(param+'=')[1];
+  return paramValue;
+}
+
+
+// Prepare user passed config options in the URL
+// show just one type or make types a distinct colour?
 // options: unified, portals, uniprot, ebi, distinct
-var passedParam = location.search.split('legend=')[1];
+config.legend = paraseParam('legend');
+
 // does the user want to hide the legend?
-var passedParamLegend = location.search.split('hideLegend=')[1];
-if ((passedParamLegend != 'false') && (passedParamLegend != undefined)) {
-  passedParamLegend = passedParamLegend.split('&')[0]; // drop anything after &
+config.legendHide = paraseParam('hideLegend');
+if ((config.legendHide != 'false') && (config.legendHide != undefined)) {
+  config.legendHide = config.legendHide.split('&')[0]; // drop anything after &
   $('.legend.modal').hide();
 }
 // throttle the display for older devices (like the south building monoliths)
-var passedParamSlimClient = location.search.split('slimClient=')[1];
-if ((passedParamSlimClient != undefined)) {
-  // passedParamSlimClient = passedParamSlimClient.split('&')[0]; // drop anything after &
+config.slimClient = paraseParam('slimClient');
+if ((config.slimClient != undefined)) {
   var lifeSpan = 24000;
 }
 // debug metrics
-var debug = false;
-var passedParamDebugMetrics = location.search.split('debug=')[1];
-if ((passedParamDebugMetrics != 'false') && (passedParamDebugMetrics != undefined)) {
-  // passedParamDebugMetrics = passedParamSlimClient.split('&')[0]; // drop anything after &
-  debug = true;
+config.debugMetrics = paraseParam('debug');
+if ((config.debugMetrics != 'false') && (config.debugMetrics != undefined)) {
+  config.debugMetrics = true;
 }
+
 // passed zoom param
-var passedParamZoom = location.search.split('zoomLevel=')[1];
-if (passedParamZoom !== undefined) {
-   // drop anything after &, convert to int
-   passedParamZoom = parseInt(passedParamZoom.split('&')[0], 10);
-  if (!isNaN(passedParamZoom)) initialZoomLevel = passedParamZoom;
+config.zoom = paraseParam('zoomLevel');
+if (config.zoom !== undefined) {
+  // drop anything after &, convert to int
+  config.zoom = parseInt(config.zoom.split('&')[0], 10);
+  if (!isNaN(config.zoom)) initialZoomLevel = config.zoom;
 }
 
 // passed lat param
-var passedParamLat = location.search.split('lat=')[1];
-if (passedParamLat !== undefined) {
+config.lat = paraseParam('lat');
+if (config.lat !== undefined) {
   // drop anything after &, convert to float
-  passedParamLat = parseFloat(passedParamLat.split('&')[0]);
-  if (!isNaN(passedParamLat)) initialLat = passedParamLat;
+  config.lat = parseFloat(config.lat.split('&')[0]);
+  if (!isNaN(config.lat)) initialLat = config.lat;
 }
 
 // passed lon param
-var passedParamLon = location.search.split('lon=')[1];
-if (passedParamLon !== undefined) {
+config.lon = paraseParam('lat');
+if (config.lon !== undefined) {
   // drop anything after &, convert to float
-  passedParamLon = parseFloat(passedParamLon.split('&')[0]);
-  if (!isNaN(passedParamLon)) initialLon = passedParamLon;
+  config.lon = parseFloat(config.lon.split('&')[0]);
+  if (!isNaN(config.lon)) initialLon = config.lon;
 }
 
 // show sunrise and sunset
@@ -214,7 +226,7 @@ function scheduledNodeRemoval(targetClusterGroup,targetNode) {
 
 // loop to keep clusters updating
 function runClusters() {
-  if (debug) { console.log(window.performance.memory); }
+  if (config.debugMetrics) { console.log(window.performance.memory); }
 
   // do we need to refresh the page
   // check if it's 1 in the morning and the page has been up for at least 1 hour
@@ -245,7 +257,7 @@ function runClusters() {
       if (offset === 0) {
         // tell user map is fresh, but wait for old dots to sync up first
         setTimeout(function() {
-          if (passedParamSlimClient == undefined) {
+          if (config.slimClient == undefined) {
             $('.leaflet-control-attribution .data-freshness').html('Map is fresh ');
           }
         }, lifeSpan - 500 );
@@ -258,7 +270,7 @@ function runClusters() {
           mainLoopPause = false;
         }, 500 );
 
-        if (passedParamSlimClient == undefined) {
+        if (config.slimClient == undefined) {
           $('.leaflet-control-attribution .data-freshness').html('Data is ' + offset + ' seconds stale ... compensating. ');
         }
 
@@ -301,7 +313,7 @@ map.addLayer(markerClustersPortals);
 map.addLayer(markerClustersUniprot);
 
 var lifeSpan = lifeSpan || 6000; // how quickly we fetch data, and how long each dot lasts
-if (debug) { console.log('Data track loop is', lifeSpan); }
+if (config.debugMetrics) { console.log('Data track loop is', lifeSpan); }
 var mainLoopPause = false; // functionality for a "pause button"
 var mainLoop = window.setInterval(runClusters, lifeSpan); // schedule future updates
 
@@ -353,9 +365,9 @@ function createLegend () {
     if ($(this).hasClass('uniprot')) { invokeLegendIcon('uniprot'); }
   });
 
-  // parse a passed param
-  if (passedParam != undefined) {
-    passedParam = passedParam.split('&')[0]; // drop anything after &
+  // parse passed param on which portal type should be shown
+  if (config.legend != undefined) {
+    config.legend = config.legend.split('&')[0]; // drop anything after &
     // now we disable all portals
     invokeLegendIcon('unified');
     invokeLegendIcon('portals');
@@ -363,11 +375,11 @@ function createLegend () {
     invokeLegendIcon('ebi');
 
     // enable jsut the one the user wants
-    if (passedParam != 'distinct') {
-      invokeLegendIcon(passedParam);
+    if (config.legend != 'distinct') {
+      invokeLegendIcon(config.legend);
     }
 
-    if (passedParam == 'distinct') {
+    if (config.legend == 'distinct') {
       // we've already turned off unified, show just show all protals
       invokeLegendIcon('portals');
       invokeLegendIcon('uniprot');
