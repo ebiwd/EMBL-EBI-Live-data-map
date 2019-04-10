@@ -14,6 +14,18 @@ L.mapbox.accessToken = 'pk.eyJ1Ijoia2hhd2tpbnNlYmkiLCJhIjoiY2ludTZ2M3ltMDBtNXczb
 var map = L.mapbox.map('map');
 
 /**
+ * Check if a var is not undefined and not false
+ * @param {string} valueToCheck - The value to check
+ */
+function issetPolyfill(valueToCheck) {
+  if ((valueToCheck != 'false') && (valueToCheck != undefined)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+/**
  * Take a param string and return the paired value.
  * @param {string} param - The param to look for.
  * @param {string} [currentLocation] - Optionally pass the url string to parse, otherwise uses `location`
@@ -21,9 +33,11 @@ var map = L.mapbox.map('map');
 function paraseParam(param,currentLocation) {
   var currentLocation = currentLocation || location;
   var paramValue = location.search.split(param+'=')[1];
+  if (issetPolyfill(paramValue)) {
+    paramValue = paramValue.split('&')[0]; // drop any trailing params
+  }
   return paramValue;
 }
-
 
 // Prepare user passed config options in the URL
 // show just one type or make types a distinct colour?
@@ -32,42 +46,44 @@ config.legend = paraseParam('legend');
 
 // does the user want to hide the legend?
 config.legendHide = paraseParam('hideLegend');
-if ((config.legendHide != 'false') && (config.legendHide != undefined)) {
-  config.legendHide = config.legendHide.split('&')[0]; // drop anything after &
+if (issetPolyfill(config.legendHide)) {
+  config.legendHide = config.legendHide; // drop anything after &
   $('.legend.modal').hide();
 }
+
 // throttle the display for older devices (like the south building monoliths)
 config.slimClient = paraseParam('slimClient');
-if ((config.slimClient != undefined)) {
+if (issetPolyfill(config.slimClient)) {
   var lifeSpan = 24000;
 }
+
 // debug metrics
 config.debugMetrics = paraseParam('debug');
-if ((config.debugMetrics != 'false') && (config.debugMetrics != undefined)) {
+if (issetPolyfill(config.debugMetrics)) {
   config.debugMetrics = true;
 }
 
 // passed zoom param
 config.zoom = paraseParam('zoomLevel');
-if (config.zoom !== undefined) {
+if (issetPolyfill(config.zoom)) {
   // drop anything after &, convert to int
-  config.zoom = parseInt(config.zoom.split('&')[0], 10);
+  config.zoom = parseInt(config.zoom, 10);
   if (!isNaN(config.zoom)) initialZoomLevel = config.zoom;
 }
 
 // passed lat param
 config.lat = paraseParam('lat');
-if (config.lat !== undefined) {
+if (issetPolyfill(config.lat)) {
   // drop anything after &, convert to float
-  config.lat = parseFloat(config.lat.split('&')[0]);
+  config.lat = parseFloat(config.lat);
   if (!isNaN(config.lat)) initialLat = config.lat;
 }
 
 // passed lon param
-config.lon = paraseParam('lat');
-if (config.lon !== undefined) {
+config.lon = paraseParam('lon');
+if (issetPolyfill(config.lon)) {
   // drop anything after &, convert to float
-  config.lon = parseFloat(config.lon.split('&')[0]);
+  config.lon = parseFloat(config.lon);
   if (!isNaN(config.lon)) initialLon = config.lon;
 }
 
@@ -103,7 +119,7 @@ map.options.minZoom = 1;
 var clusterSizeFactor = function(passedClusterSize) { // how we size the clusters
   pixelIncrease = 20; // constant to ensure a minimum size
   return (Math.sqrt(passedClusterSize) * 5) + pixelIncrease;
-}
+};
 
 function newMarkerClusterGroup(clusterColors,targetClusterCSSClass,clusterPopUpHTML) {
   var clusterName = new L.MarkerClusterGroup({
@@ -234,7 +250,7 @@ function runClusters() {
       current_hour = date.getHours(),
       reboot_hour = 1;
   if ((current_hour === reboot_hour) && ((Date.now() - loadTimestamp) > 60*60*1000)) {
-    location.reload(false) // false = reload from cache
+    location.reload(false); // false = reload from cache
   }
 
   // are we paused?
@@ -348,7 +364,7 @@ function createLegend () {
   function invokeLegendIcon(request) {
     var invokedLegendIcon = 'a.display-toggle.'+request+' span.legend-icon';
     if ($(invokedLegendIcon).css('opacity')== 1) {
-      $(invokedLegendIcon).css('opacity',.25);
+      $(invokedLegendIcon).css('opacity','.25');
       $('body').removeClass('display-'+request);
     } else {
       $(invokedLegendIcon).css('opacity',1);
@@ -367,7 +383,6 @@ function createLegend () {
 
   // parse passed param on which portal type should be shown
   if (config.legend != undefined) {
-    config.legend = config.legend.split('&')[0]; // drop anything after &
     // now we disable all portals
     invokeLegendIcon('unified');
     invokeLegendIcon('portals');
