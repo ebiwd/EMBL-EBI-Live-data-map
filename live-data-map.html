@@ -54,6 +54,7 @@
   - ebi: live-data-map.html?legend=ebi
   - show all as unqiue colours: live-data-map.html?legend=distinct
   - disable the legend: live-data-map.html?hideLegend=true
+  - description block: live-data-map.html?description=true
 
   You can throttle this for older devices with "?slimClient=true",
   this will reduce the update frequency and trim some display options.
@@ -83,7 +84,8 @@
   <link href='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.css' rel='stylesheet' />
   <link href='https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.0.0/MarkerCluster.css' rel='stylesheet' />
   <link href='https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.0.0/MarkerCluster.Default.css' rel='stylesheet' />
-  <link rel="stylesheet" href="//ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.1/fonts.css" />
+  <link rel="stylesheet" href="//ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.3/fonts.css" />
+  <link rel="stylesheet" media="all" href="https://dev.assets.emblstatic.net/vf/v2.0.0-alpha.4/css/styles.css" />
   <link rel="stylesheet" href="assets/map_styles.css" />
 </head>
 
@@ -95,6 +97,20 @@
   <div id="map"></div>
 
   <div id="legend" class="legend modal"></div>
+
+  <div id="description" class="description modal">
+    <section class="vf-intro | embl-grid embl-grid--has-centered-content vf-u-margin-0">
+        <div>
+            <!-- empty -->
+        </div>
+        <div>
+            <h1 class="vf-lede">EMBL-EBI Data resources</h1>
+            <p class="vf-intro__text">This map shows real-time requests to EMBL-EBI services, portal pages and EBI-hosted services from around the world.</p>
+
+            <p class="vf-intro__text">Learn more: www.ebi.ac.uk/about/our-imapct.</p>
+        </div>
+    </section>
+  </div>
 
   <script src='https://api.mapbox.com/mapbox.js/v3.0.1/mapbox.js'></script>
   <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
