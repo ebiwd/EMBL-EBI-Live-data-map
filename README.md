@@ -18,7 +18,7 @@ With that in mind there are two development scenarios.
   - `php -S localhost:8000`
   - open `http://localhost:8000/live-data-map.html`
 2. You're outside the EBI network and only want to develop the web interface
-  - You won't see any live data, but you'll be able to test the map and query paramaters
+  - You won't see any live data, but you'll be able to test the map and query parameters
   - You'll be [using Browsersync](https://www.browsersync.io/#install):
   - `npm install -g browser-sync`
-  - `browser-sync start --server --index live-data-map.html --port 5000`
+  - `browser-sync start --server --index live-data-map.html --port 5000 --watch -f '*'`
