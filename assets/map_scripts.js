@@ -56,6 +56,13 @@ if (issetPolyfill(config.slimClient)) {
   var lifeSpan = 24000;
 }
 
+// description block
+config.description = paraseParam('description');
+if (issetPolyfill(config.description)) {
+  config.description = true;
+  $('.description').show();
+}
+
 // debug metrics
 config.debugMetrics = paraseParam('debug');
 if (issetPolyfill(config.debugMetrics)) {
@@ -410,11 +417,8 @@ function handleVisibilityChange() {
   if (document[hidden]) {
     // only pause if the tab is playing
     if (mainLoopPause === false) { $('a.pause').click(); }
-    // $('#pause-message').remove();
-    // $('body').append('<div id="pause-message" class="message modal">Noticed you switched away, we\'ll resume the map</div>');
   } else {
     $('a.pause').click();
-    // $('#pause-message').hide(1500);
   }
 }
 
