@@ -47,7 +47,6 @@ config.legend = paraseParam('legend');
 // does the user want to hide the legend?
 config.legendHide = paraseParam('hideLegend');
 if (issetPolyfill(config.legendHide)) {
-  config.legendHide = config.legendHide; // drop anything after &
   $('.legend.modal').hide();
 }
 
@@ -66,7 +65,7 @@ if (issetPolyfill(config.debugMetrics)) {
 // passed zoom param
 config.zoom = paraseParam('zoomLevel');
 if (issetPolyfill(config.zoom)) {
-  // drop anything after &, convert to int
+  // convert to int
   config.zoom = parseInt(config.zoom, 10);
   if (!isNaN(config.zoom)) initialZoomLevel = config.zoom;
 }
@@ -74,7 +73,7 @@ if (issetPolyfill(config.zoom)) {
 // passed lat param
 config.lat = paraseParam('lat');
 if (issetPolyfill(config.lat)) {
-  // drop anything after &, convert to float
+  // convert to float
   config.lat = parseFloat(config.lat);
   if (!isNaN(config.lat)) initialLat = config.lat;
 }
@@ -82,7 +81,7 @@ if (issetPolyfill(config.lat)) {
 // passed lon param
 config.lon = paraseParam('lon');
 if (issetPolyfill(config.lon)) {
-  // drop anything after &, convert to float
+  // convert to float
   config.lon = parseFloat(config.lon);
   if (!isNaN(config.lon)) initialLon = config.lon;
 }
