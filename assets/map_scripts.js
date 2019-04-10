@@ -61,6 +61,8 @@ config.description = paraseParam('description');
 if (issetPolyfill(config.description)) {
   config.description = true;
   $('.description').show();
+  // disable the legend
+  $('.legend.modal').hide();
 }
 
 // debug metrics
