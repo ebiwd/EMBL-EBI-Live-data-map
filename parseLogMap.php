@@ -16,6 +16,7 @@
 
   // Don't allow direct use of the file, and don't allow non-ebi hosted use of file
   if (strpos(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST),'ebi.ac.uk') < 1) {
+    http_response_code(403);
     exit;
   }
 
@@ -70,7 +71,8 @@
     curl_close($curl_handle);
 
     if (empty($buffer)) {
-      return "Nothing returned from url.";
+      http_response_code(204);
+      exit;
     } else {
       return simplexml_load_string($buffer);
     }
