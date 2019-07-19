@@ -2,6 +2,13 @@
   // A proxy for the EMBL-EBI Live Data Map
   // fetch KML and return as simple CSV
 
+  // the available sources
+  $dataSources = array(
+    "ebi" => "http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/ebi.fcgi",
+    "portals" => "http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/portals.fcgi",
+    "uniprot" => "http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/uniprot.fcgi",
+  );
+
   // No automatic caching ...
   header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
   header("Cache-Control: post-check=0, pre-check=0", false);
@@ -14,28 +21,6 @@
 
   // Which file(s) is the requester after?
   $desiredFile = htmlspecialchars($_GET["file"]);
-
-  // set up a local file based cache
-  $cacheFileName = 'cache/' . $desiredFile . '.csv';
-  // is the data already cahced?
-  if (file_exists($cacheFileName)) {
-    // use cache if less than XXX seconds old
-    if (time() - filemtime($cacheFileName) < 6) {
-      header("Map-cache-creation: ". urlencode(filemtime($cacheFileName)));
-      header("Map-cache-server-time: ". urlencode(time()));
-      require $cacheFileName;
-      exit; // dump the cahced contents and go home
-    }
-  }
-
-  // OK then, we're getting new data...
-
-  // the available sources
-  $dataSources = array(
-    "ebi" => "http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/ebi.fcgi",
-    "portals" => "http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/portals.fcgi",
-    "uniprot" => "http://ves-ebi-0f.ebi.ac.uk/ebiwebtrafficmap/fcgi-bin/uniprot.fcgi",
-  );
 
   // what's been requested
   switch ($desiredFile) {
@@ -58,6 +43,21 @@
       $pointType = array('markerClustersUniprot');
       break;
   }
+
+  // set up a local file based cache
+  $cacheFileName = 'cache/' . $desiredFile . '.csv';
+  // is the data already cahced?
+  if (file_exists($cacheFileName)) {
+    // use cache if less than XXX seconds old
+    if (time() - filemtime($cacheFileName) < 6) {
+      header("Map-cache-creation: ". urlencode(filemtime($cacheFileName)));
+      header("Map-cache-server-time: ". urlencode(time()));
+      require $cacheFileName;
+      exit; // dump the cahced contents and go home
+    }
+  }
+
+  // OK then, we're getting new data...
 
   // Function to fetch the file
   // We use curl as we can't use nicer functions on our infrastructure
@@ -113,5 +113,3 @@
 
   // save to the cache
   file_put_contents($cacheFileName, $output);
-
-?>
