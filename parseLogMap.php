@@ -14,8 +14,11 @@
   header("Cache-Control: post-check=0, pre-check=0", false);
   header("Pragma: no-cache");
 
-  // Don't allow direct use of the file, and don't allow non-ebi hosted use of file
-  if (strpos(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST),'ebi.ac.uk') < 1) {
+  $isMonitor = strpos($_SERVER['HTTP_USER_AGENT'], 'StatusCake') !== FALSE; 
+  $isEbi = strpos(parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST), 'ebi.ac.uk') !== FALSE; 
+
+  // Don't allow direct use of the file except StatusCake, and don't allow non-EBI hosted use of file
+  if (!$isMonitor && !$isEbi) {
     http_response_code(403);
     exit;
   }
