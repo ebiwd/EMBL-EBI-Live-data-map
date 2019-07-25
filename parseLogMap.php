@@ -1,4 +1,9 @@
 <?php
+  if (php_sapi_name() == 'cli') {
+    echo "Script cannot run in CLI\n";
+    exit;
+  }
+
   // A proxy for the EMBL-EBI Live Data Map
   // fetch KML and return as simple CSV
 
@@ -24,7 +29,7 @@
   }
 
   // Which file(s) is the requester after?
-  $desiredFile = htmlspecialchars($_GET["file"]);
+  $desiredFile = isset($_GET['file']) ? htmlspecialchars($_GET["file"]) : '';
 
   // what's been requested
   switch ($desiredFile) {
@@ -70,10 +75,14 @@
     curl_setopt($curl_handle,CURLOPT_URL,$url);
     curl_setopt($curl_handle,CURLOPT_CONNECTTIMEOUT,2);
     curl_setopt($curl_handle,CURLOPT_RETURNTRANSFER,1);
+
     $buffer = curl_exec($curl_handle);
+    $return_code = curl_getinfo($curl_handle, CURLINFO_HTTP_CODE);
+
     curl_close($curl_handle);
 
-    if (empty($buffer)) {
+    if (empty($buffer) || $return_code !== 200) {
+      echo "Data source returning error code: $return_code\n";
       http_response_code(204);
       exit;
     } else {
