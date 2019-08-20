@@ -71,6 +71,12 @@ if (issetPolyfill(config.debugMetrics)) {
   config.debugMetrics = true;
 }
 
+// error message display
+config.hideErrorMessages = paraseParam('hideErrorMessages');
+if (issetPolyfill(config.hideErrorMessages)) {
+  config.hideErrorMessages = true;
+}
+
 // passed zoom param
 config.zoom = paraseParam('zoomLevel');
 if (issetPolyfill(config.zoom)) {
@@ -248,6 +254,26 @@ function scheduledNodeRemoval(targetClusterGroup,targetNode) {
   }
 }
 
+// Show a user-friendly when data fetching fails
+var errorMessageTimeout;
+var errorFailCount = 0;
+var errorDisplayThreshold = 2; // so we don't show every time a fail occurs
+
+function showErrorMessage() {
+  errorFailCount++
+
+  if (errorFailCount >= errorDisplayThreshold && !(config.hideErrorMessages)) {
+    $('.modal--error').slideUp(); // ensure hidden to begin
+    clearTimeout(errorMessageTimeout); // ensure we're not already awaiting message to be cleared
+    $('.modal--error').slideDown('fast');
+    // show error message for length of http request lifespan
+    errorMessageTimeout = setTimeout(function(){ $('.modal--error').slideUp('slow'); }, lifeSpan);
+
+    errorFailCount = 0;
+  }
+
+}
+
 // loop to keep clusters updating
 function runClusters() {
   if (config.debugMetrics) { console.log(window.performance.memory); }
@@ -301,9 +327,15 @@ function runClusters() {
       }
       parseDate(data,offset);
     },
-    error: function(jqXHR, textStatus){
+    error: function(jqXHR, textStatus) {
+
+      showErrorMessage();
+
+      if(jqXHR.status === 403) {
+        console.log('There was an error fetching list of users. Please try again later.');
+      }
       if(textStatus === 'timeout') {
-        // console.log('Unable to get data source in a timely fashion',jqXHR);
+        console.log('Unable to get data source in a timely fashion');
         if (Raven.isSetup()) {
           Raven.captureMessage('Unable to get data source in a timely fashion', {
             level: 'warning' // one of 'info', 'warning', or 'error'
