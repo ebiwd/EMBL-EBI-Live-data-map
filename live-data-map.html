@@ -56,14 +56,13 @@
   - disable the legend: live-data-map.html?hideLegend=true
   - description block: live-data-map.html?description=true
 
-  You can throttle this for older devices with "?slimClient=true",
-  this will reduce the update frequency and trim some display options.
-
-  You can set an initial zoom level, lat, long:
+  You can set some other optional paramaters:
   - zoomLevel=2 (2 is default)
   - lat=30 (30 is default)
   - lon=-10.5 (-10.5 is default)
+  - slimClient=false (reduces performance for older devices by lowering update frequency and trim some display options; false is default)
   - hideErrorMessages=false (false is default)
+  - debug=false (false is default)
 
   The map and its asset URLs are subject to change, so please do not directly code the map into your web page.
 
@@ -93,6 +92,10 @@
   <!-- Sentry Raven JS debugging -->
   <!-- <script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script> -->
   <!-- <script>Raven.config('https://85a7e84090644f43801eedac0af1eb51@sentry.io/204881').install();</script> -->
+
+  <div class="modal modal--error">
+    <p class=""><strong>Retrying...</strong> Something went wrong while to fetch map data. Attempting to reconnect.</p>
+  </div>
 
   <div id="map"></div>
 
