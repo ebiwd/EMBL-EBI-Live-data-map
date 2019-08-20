@@ -101,6 +101,13 @@ if (issetPolyfill(config.lon)) {
   if (!isNaN(config.lon)) initialLon = config.lon;
 }
 
+// optionally disable mouse wheel zooming
+config.disableZoomScroll = paraseParam('disableZoomScroll');
+if (issetPolyfill(config.disableZoomScroll)) {
+  config.disableZoomScroll = true;
+  map.scrollWheelZoom.disable();
+}
+
 // show sunrise and sunset
 // http://joergdietrich.github.io/Leaflet.Terminator/
 var daynightoverlay = L.terminator({className:'daynightoverlay'});
