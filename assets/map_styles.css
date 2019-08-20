@@ -40,8 +40,6 @@ body.display-unified .leaflet-marker-icon div.markerClustersUniprot:hover,
 body.display-unified .legend div.markerClustersPortals .legend-icon,
 body.display-unified .legend div.markerClustersUniprot .legend-icon { background-color: rgba(168,200,19,.4); }
 
-
-
 .modal {
   background-color: #fff;
   padding: 10px;
@@ -50,6 +48,16 @@ body.display-unified .legend div.markerClustersUniprot .legend-icon { background
 }
 
 .modal h4 { margin: 0 0 5px; }
+
+.modal--error {
+  opacity: .9;
+  display: none;
+  border-radius: 5px;
+  box-shadow: 0 0 6px rgba(0,0,0,.4);
+  left: 50%;
+  margin-left: -25%;
+  top: -10px;
+}
 
 .description {
   display: none;
